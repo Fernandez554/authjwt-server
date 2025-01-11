@@ -1,4 +1,4 @@
-package com.nttbnak.microservices.authjwt_server;
+package com.nttbank.microservices.authjwtserver;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
