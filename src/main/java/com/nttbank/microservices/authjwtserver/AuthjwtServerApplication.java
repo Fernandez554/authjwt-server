@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class AuthjwtServerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AuthjwtServerApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(AuthjwtServerApplication.class, args);
+  }
 
 }

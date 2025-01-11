@@ -15,40 +15,41 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 @Document(collection = "user")
-public class UserEntity implements UserDetails{
-    @Id
-    private String id;
-    private String name;
-    private String lastname;
-    private String username;
-    private String email;
-    private String password;
-    private String[] roles;
+public class UserEntity implements UserDetails {
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.stream(roles)
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
+  @Id
+  private String id;
+  private String name;
+  private String lastname;
+  private String username;
+  private String email;
+  private String password;
+  private String[] roles;
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return Arrays.stream(roles)
+        .map(SimpleGrantedAuthority::new)
+        .collect(Collectors.toList());
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 }
