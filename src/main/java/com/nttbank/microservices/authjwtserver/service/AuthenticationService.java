@@ -2,12 +2,15 @@ package com.nttbank.microservices.authjwtserver.service;
 
 
 import com.nttbank.microservices.authjwtserver.config.JwtService;
+import com.nttbank.microservices.authjwtserver.exception.UsernameAlreadyExistsException;
 import com.nttbank.microservices.authjwtserver.model.entity.UserEntity;
 import com.nttbank.microservices.authjwtserver.model.request.AuthenticationRequest;
 import com.nttbank.microservices.authjwtserver.model.request.RegisterRequest;
 import com.nttbank.microservices.authjwtserver.model.response.TokenResponse;
 import com.nttbank.microservices.authjwtserver.model.response.UserCreatedResponse;
 import com.nttbank.microservices.authjwtserver.repository.IUserRepo;
+import com.nttbank.microservices.authjwtserver.util.KafkaUtil;
+import com.nttbank.microservices.commonlibrary.event.CreateBankAccountEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +28,7 @@ public class AuthenticationService {
   private final IUserRepo userRepository;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private final KafkaUtil kafkaUtil;
 
 
   public TokenResponse authenticate(AuthenticationRequest request) {
@@ -44,20 +48,28 @@ public class AuthenticationService {
   public UserCreatedResponse register(RegisterRequest request) {
 
     if (userRepository.findByUsername(request.username()).isPresent()) {
-      throw new IllegalArgumentException("Username already exists");
+      throw new UsernameAlreadyExistsException("Username already exists");
     }
 
     UserEntity userEntity = UserEntity.builder()
         .username(request.username())
-        .name(request.name())
-        .lastname(request.lastname())
-        .email(request.email())
-        .roles(request.roles())
+        .roles(new String[]{"ROLE_USER"})
         .password(passwordEncoder.encode(request.password()))
+        .status("active")
         .build();
 
     userRepository.save(userEntity);
-    return UserCreatedResponse.builder().build();
+    kafkaUtil.sendMessage(CreateBankAccountEvent.builder()
+        .username(request.username())
+        .email(request.email())
+        .phoneNumber(request.phoneNumber())
+        .imei(request.imei())
+        .build());
+
+    return UserCreatedResponse.builder()
+        .status("success")
+        .message("User created successfully, your wallet will be configured in some minutes.")
+        .build();
 
   }
 

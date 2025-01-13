@@ -47,6 +47,15 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
   }
 
+  @ExceptionHandler({UsernameAlreadyExistsException.class})
+  public ResponseEntity<Map<String, Object>> handleUsernameAlreadyExist(Exception ex) {
+    Map<String, Object> response = new HashMap<>();
+    response.put("status", HttpStatus.CONFLICT.value());
+    response.put("error", "Registration failed");
+    response.put("message", ex.getMessage());
+    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Map<String, Object>> handleValidationExceptions(
       MethodArgumentNotValidException ex) {

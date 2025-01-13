@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class JwtService {
 
 
-  @Value("${nttbank.security.key:jfernandez}")
+  @Value("${nttbank.security.key:nttbank}")
   private String securityKey;
 
 
@@ -25,8 +25,7 @@ public class JwtService {
     UserEntity userEntity = (UserEntity) userDetails;
 
     Map<String, Object> customClaims = new HashMap<>();
-    customClaims.put("email", userEntity.getEmail());
-    customClaims.put("lastname", userEntity.getLastname());
+    customClaims.put("username", userEntity.getUsername());
     customClaims.put("authorities", userEntity.getRoles());
 
     return Jwts.builder()
